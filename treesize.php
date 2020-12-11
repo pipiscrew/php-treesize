@@ -22,9 +22,26 @@
     $dirlist = [];
     foreach ( $objects as $name => $object ) {
         if ( $object->isDir() ) {
-            $dirlist[$object->getPathName()] = getDirectorySize($object->getPathName());
+            $dirlist[$object->getPathName()]['size'] = getDirectorySize($object->getPathName());
+			$dirlist[$object->getPathName()]['count'] = getFileCount($object->getPathName());
         }
     }
+
+	function getFileCount($path) {
+		// src - https://stackoverflow.com/a/15778200
+		$size = 0;
+		$ignore = array('.','..','cgi-bin','.DS_Store');
+		$files = scandir($path);
+		foreach($files as $t) {
+			if(in_array($t, $ignore)) continue;
+			if (is_dir(rtrim($path, '/') . '/' . $t)) {
+				$size += getFileCount(rtrim($path, '/') . '/' . $t);
+			} else {
+				$size++;
+			}   
+		}
+		return $size;
+	}
 
     arsort($dirlist);
 
@@ -48,10 +65,10 @@
       <th class="text-right">Size</th>
     </tr>
     </thead>
-      <?php foreach ( $dirlist as $dir => $size ) { ?>
+      <?php foreach ( $dirlist as $dir => $x ) { ?>
         <tr>
           <th class="text-monospace"><?php echo htmlentities($dir) ?></th>
-          <td class="text-right small text-nowrap"><?php echo number_format($size / 1024, 0, ',', '.') ?> KB</td>
+          <td class="text-right small text-nowrap"><?php echo '('.$x['count'].') ' . number_format($x['size'] / 1024, 0, ',', '.') ?> KB</td>
         </tr>
       <?php } ?>
   </table>

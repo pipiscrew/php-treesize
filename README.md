@@ -2,4 +2,4 @@
 
 Quick PHP one-file to show recursive disk usage in current directory.
 
-https://raw.githubusercontent.com/tomsommer/php-treesize/master/treesize.php
+in addition to original repo, shows also the file count.
